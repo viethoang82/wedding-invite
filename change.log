@@ -1,0 +1,242 @@
+# README.md
+
+# Wedding Invite — Netlify-ready Starter
+
+This repository contains a simple, Netlify-ready static website template for an online wedding invitation.
+
+**What you get**
+- `index.html` — main static page with Tailwind CDN (prototype). Includes Netlify Forms-ready RSVP.
+- `assets/` — put your images in `assets/img/` (e.g. `photo1.jpg`, `og-image.jpg`).
+
+---
+
+## Quick features
+- Mobile-first responsive layout (Tailwind CDN for prototyping)
+- Netlify Forms integration (works automatically when deployed to Netlify)
+- Google Maps iframe placeholder
+- Print-friendly "Preview/PDF" using browser Print
+- Simple instructions for connecting to Google Sheets via Zapier/Make
+
+---
+
+## Folder structure (suggested)
+
+```
+wedding-invite-netlify/
+├─ index.html
+├─ assets/
+│  ├─ img/
+│  │  ├─ photo1.jpg
+│  │  ├─ photo2.jpg
+│  │  └─ og-image.jpg
+│  └─ css/ (optional: your custom css)
+└─ README.md
+```
+
+---
+
+## How to deploy on Netlify (step-by-step)
+
+1. **Create GitHub repo**
+   - Create a new repository on GitHub and push this project (all files including `index.html` and `assets/`).
+
+2. **Sign in to Netlify**
+   - Go to https://app.netlify.com and sign up / login.
+
+3. **New site from Git**
+   - Click "New site from Git" → Connect your GitHub → select the repository.
+   - Branch: `main` (or whichever branch you pushed).
+   - Build command: leave blank (static `index.html`) — or if you later add a static site generator, enter `npm run build`.
+   - Publish directory: `/` (root) for this simple repo.
+
+4. **Deploy**
+   - Click "Deploy site". Netlify will build and deploy your site. After deploy, you'll get a Netlify domain like `happy-swartz-123.netlify.app`.
+
+5. **Netlify Forms**
+   - The `index.html` form uses `data-netlify="true"` and `form-name="rsvp"`. Netlify will auto-detect the form after first successful form submission.
+   - To test, open the live site and submit the RSVP form once. Then check Site dashboard → Forms to view responses.
+
+6. **Custom domain & HTTPS**
+   - In Netlify site dashboard → Domain settings → Add custom domain. Follow instructions to update your DNS records at your domain registrar.
+   - Netlify automatically provisions a TLS certificate (Let's Encrypt).
+
+7. **Using Google Sheets / Airtable to store responses**
+   - If you want responses pushed to Google Sheets: use **Zapier** or **Make (Integromat)**. Connect Netlify Forms (webhook) → Google Sheets action.
+   - For Airtable, use Airtable's API or Zapier to add records.
+
+8. **Spam protection**
+   - Add `netlify-honeypot` field (already present). For stronger protection, add reCAPTCHA or hCaptcha via Netlify's integrations or your own serverless function.
+
+9. **Optional: Replace Tailwind CDN with built Tailwind**
+   - For production-size optimization, replace CDN usage with a built Tailwind CSS and include only the classes used. Use a simple npm setup with `postcss` and `tailwindcss`.
+
+10. **Optional: Stripe payment / donation**
+    - If you want guests to send monetary gifts, consider linking to Stripe Checkout (serverless) — do NOT collect card details on site directly.
+
+---
+
+## index.html (place this file at project root)
+
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thiệp cưới — [Tên Cô dâu] & [Tên Chú rể]</title>
+  <meta name="description" content="Thiệp cưới online — RSVP, địa điểm, gallery" />
+  <!-- Open Graph (tùy chỉnh) -->
+  <meta property="og:title" content="[Tên Cô dâu] & [Tên Chú rể] — Ngày cưới" />
+  <meta property="og:description" content="Mời bạn đến chung vui cùng chúng tôi" />
+  <meta property="og:image" content="/assets/img/og-image.jpg" />
+
+  <!-- Tailwind via CDN (dùng cho prototype). Trong production, build Tailwind để giảm kích thước -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Một số style nhỏ cho demo */
+    .hero-bg { background-image: linear-gradient(120deg, rgba(255,255,255,0.06), rgba(0,0,0,0.05)); }
+    .blur-backdrop { backdrop-filter: blur(6px); }
+  </style>
+</head>
+<body class="antialiased text-slate-800 bg-white">
+  <!-- NAV -->
+  <header class="fixed w-full z-30 bg-white/60 backdrop-blur-sm shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="font-semibold">[Họ & Tên]</div>
+      <nav class="text-sm space-x-4">
+        <a href="#rsvp" class="hover:underline">RSVP</a>
+        <a href="#schedule" class="hover:underline">Lịch</a>
+        <a href="#venue" class="hover:underline">Địa điểm</a>
+        <a href="#gallery" class="hover:underline">Gallery</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="pt-20">
+    <div class="max-w-4xl mx-auto px-6 text-center py-20">
+      <div class="mx-auto max-w-2xl">
+        <h1 class="text-4xl sm:text-5xl font-extrabold">[Tên Cô dâu] <span class="text-pink-600">&</span> [Tên Chú rể]</h1>
+        <p class="mt-4 text-lg text-slate-600">Chúng tôi trân trọng mời bạn đến chung vui vào <strong>[Ngày — vd: 10/10/2026]</strong></p>
+        <div class="mt-8 flex items-center justify-center gap-4">
+          <a href="#rsvp" class="px-6 py-3 bg-pink-600 text-white rounded-md shadow">RSVP</a>
+          <a href="#venue" class="px-6 py-3 border rounded-md">Xem địa điểm</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story / About -->
+  <section class="bg-slate-50">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+      <h2 class="text-2xl font-semibold">Câu chuyện của chúng tôi</h2>
+      <p class="mt-4 text-slate-600">Viết vài câu ngắn gọn về hai bạn: lần đầu gặp, khoảnh khắc đáng nhớ,... Giữ 2-3 đoạn ngắn thôi để khách đọc nhanh.</p>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section id="schedule" class="max-w-4xl mx-auto px-6 py-12">
+    <h3 class="text-xl font-semibold">Lịch trình</h3>
+    <ul class="mt-4 space-y-3 text-slate-700">
+      <li><strong>09:00</strong> — Đón khách & nghi thức lễ tại [Tên địa điểm]</li>
+      <li><strong>11:00</strong> — Tiệc mừng</li>
+      <li><strong>15:00</strong> — Kết thúc</li>
+    </ul>
+  </section>
+
+  <!-- Venue -->
+  <section id="venue" class="bg-slate-50">
+    <div class="max-w-4xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <div>
+        <h3 class="text-xl font-semibold">Địa điểm</h3>
+        <p class="mt-2 text-slate-600">[Tên hội trường / địa chỉ đầy đủ]</p>
+        <p class="mt-4 text-sm">Gợi ý: chỗ gửi xe, lối vào, liên hệ người phụ trách: <strong>0123 456 789</strong></p>
+      </div>
+      <div>
+        <!-- Google Maps embed: thay place_id / link bằng link chia sẻ địa điểm của bạn -->
+        <iframe class="w-full h-56 rounded" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919...." aria-hidden="false"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section id="gallery" class="max-w-4xl mx-auto px-6 py-12">
+    <h3 class="text-xl font-semibold">Gallery</h3>
+    <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <!-- Thay src bởi đường dẫn ảnh thực tế, đặt trong /assets/img/ -->
+      <img loading="lazy" src="/assets/img/photo1.jpg" alt="photo1" class="w-full h-40 object-cover rounded" />
+      <img loading="lazy" src="/assets/img/photo2.jpg" alt="photo2" class="w-full h-40 object-cover rounded" />
+      <img loading="lazy" src="/assets/img/photo3.jpg" alt="photo3" class="w-full h-40 object-cover rounded" />
+    </div>
+  </section>
+
+  <!-- RSVP -->
+  <section id="rsvp" class="bg-pink-50">
+    <div class="max-w-2xl mx-auto px-6 py-12">
+      <h3 class="text-2xl font-semibold">RSVP</h3>
+      <p class="mt-2 text-slate-600">Vui lòng xác nhận giúp chúng tôi trước <strong>[Ngày Hạn]</strong>.</p>
+
+      <!-- Form example: Netlify Forms (dùng nếu deploy trên Netlify). Nếu dùng Google Forms, bạn nhúng iframe form của Google ở đây. -->
+      <form name="rsvp" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="mt-6 space-y-4">
+        <!-- honeypot field -->
+        <input type="hidden" name="form-name" value="rsvp" />
+        <p class="hidden"><label>Don’t fill this out if you're human: <input name="bot-field" /></label></p>
+
+        <div>
+          <label class="block text-sm">Họ & Tên</label>
+          <input required name="name" class="mt-1 block w-full rounded border px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm">Số điện thoại / Email</label>
+          <input required name="contact" class="mt-1 block w-full rounded border px-3 py-2" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm">Số khách</label>
+            <input required type="number" name="guests" min="1" value="1" class="mt-1 block w-full rounded border px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-sm">Lựa chọn món</label>
+            <select name="menu" class="mt-1 block w-full rounded border px-3 py-2">
+              <option value="T0">Chọn</option>
+              <option value="T1">Option 1</option>
+              <option value="T2">Option 2</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm">Ghi chú</label>
+          <textarea name="note" rows="3" class="mt-1 block w-full rounded border px-3 py-2"></textarea>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button type="submit" class="px-5 py-2 bg-pink-600 text-white rounded">Gửi RSVP</button>
+          <button type="button" id="btnPreview" class="px-4 py-2 border rounded">Xem PDF</button>
+        </div>
+      </form>
+
+      <p class="mt-4 text-sm text-slate-500">Ghi chú: form dùng Netlify Forms. Nếu bạn deploy ở chỗ khác và muốn lưu vào Google Sheets, dùng webhook hoặc Zapier/Make.</p>
+    </div>
+  </section>
+
+  <!-- Footer / Contact -->
+  <footer class="max-w-4xl mx-auto px-6 py-8 text-center text-sm text-slate-600">
+    Liên hệ: <a href="tel:0123456789" class="underline">0123 456 789</a> — Cảm ơn bạn đã quan tâm.
+  </footer>
+
+  <!-- Minimal JS để mở PDF preview (tạo PDF bằng in-browser print) -->
+  <script>
+    document.getElementById('btnPreview').addEventListener('click', function(){
+      window.print();
+    });
+  </script>
+
+  <!-- Cấu hình thêm (hướng dẫn nhanh):
+     - Thay ảnh vào /assets/img/
+     - Thay Google Maps iframe src bằng link chia sẻ địa điểm thật
+     - Nếu dùng Netlify: push repo lên GitHub, connect Netlify và deploy. Netlify sẽ nhận form tự động.
+     - Nếu muốn lưu form vào Google Sheets: tạo webhook bằng Zapier/Make hoặc dùng Google Apps Script.
+     - Để giảm size: build Tailwind và chỉ include classes cần thiết.
+  -->
+</body>
+</html>
